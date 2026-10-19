@@ -42,3 +42,21 @@ El código está concentrado en un solo archivo (`Program.cs`) pero separa respo
 
 ## Documentación
 Consulta la carpeta `docs/`. El diagnóstico de aprendizaje incluido es provisional porque debe reflejar respuestas y razonamientos propios del estudiante, no solamente contenido generado por una herramienta.
+## Control de versiones y colaboración
+
+El proyecto NEXUS 2.0 utiliza GitHub para almacenar y organizar su código fuente y documentación. El control de versiones permite registrar modificaciones, mantener un historial de cambios y facilitar el trabajo colaborativo.
+
+### Procedimiento de Pull Request
+
+1. Crear una rama independiente para realizar modificaciones.
+2. Editar el código o la documentación del proyecto.
+3. Registrar los cambios mediante un commit.
+4. Crear un Pull Request para proponer la integración de los cambios en la rama principal `main`.
+5. Revisar las modificaciones antes de aprobar su integración.
+
+### Objetivo
+
+Mantener un historial organizado del desarrollo de NEXUS 2.0 y permitir que los cambios sean revisados antes de incorporarse a la versión principal del proyecto.
+
+**Repositorio:** https://github.com/estatnerluisramosca-coder/NEXUS-2.0
+Documentación técnica del proyecto NEXUS 2.0.
