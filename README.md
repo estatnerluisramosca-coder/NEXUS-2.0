@@ -1,61 +1,24 @@
-# NEXUS v1.0 — AMANECER DE LOS GIGANTES 
+# NEXUS V9 — El Amanecer de los Gigantes
 
-Juego de exploración, decisiones y supervivencia desarrollado en C# como aplicación de consola para .NET Framework 4.8.
+## Entrega final: Operación Memoria
 
-## Estado del proyecto
-Esta entrega conserva el código fuente recibido y añade documentación inicial para el Hito 3. La documentación se basa en `Program.cs`; los conceptos que no están implementados se marcan como ejemplos complementarios.
+La versión actual es una aplicación de escritorio en C# (Windows Forms) con perfiles e historial de partidas guardados en Microsoft SQL Server.
 
-## Funcionalidades identificadas
-- Crear un cadete y gestionar salud, energía, ataque, escudos y experiencia.
-- Explorar zonas y generar eventos aleatorios.
-- Desplazarse entre zonas adyacentes.
-- Combatir contra entidades (`Robot` y `Enemigo`).
-- Administrar un inventario de objetos.
-- Registrar objetivos y completar la misión “La anomalía perdida”.
+- **Código, base de datos, capturas y presentación:** [Entrega_V9/](Entrega_V9/)
+- **Guía de instalación y ejecución:** [Entrega_V9/README.md](Entrega_V9/README.md)
+- **Script de base de datos:** [Entrega_V9/BaseDatos/01_Crear_NexusMemoria.sql](Entrega_V9/BaseDatos/01_Crear_NexusMemoria.sql)
+- **Evidencias de guardado y recuperación:** [Entrega_V9/Evidencias/](Entrega_V9/Evidencias/)
+- **Presentación de la actividad:** [Entrega_V9/Presentacion/NEXUS_Operacion_Memoria_SQLServer.pptx](Entrega_V9/Presentacion/NEXUS_Operacion_Memoria_SQLServer.pptx)
 
-## Requisitos
-- Visual Studio Community.
-- .NET Framework 4.8 Developer Pack/Targeting Pack.
-- Windows o entorno compatible con aplicaciones de consola .NET Framework.
+## Para ejecutar la versión actual
 
-## Cómo ejecutar
-1. Abre `nexus 2.0.sln` en Visual Studio.
-2. Comprueba que el proyecto use .NET Framework 4.8.
-3. Selecciona la configuración `Debug` y la plataforma `Any CPU`.
-4. Ejecuta con `F5` o `Ctrl+F5`.
+1. Instala y ejecuta el motor de SQL Server.
+2. Abre Entrega_V9/BaseDatos/01_Crear_NexusMemoria.sql en SSMS y ejecútalo una vez.
+3. Para compilar el juego, abre Entrega_V9/nexus el amanecer de los gigantes.slnx con Visual Studio 2022 y el paquete de .NET Framework 4.7.2.
+4. Si la instancia SQL tiene otro nombre distinto de localhost, actualiza Data Source en App.config.
 
-## Archivos principales
-- `Program.cs`: contiene el punto de entrada y las clases del juego.
-- `nexus 2.0.csproj`: configuración del proyecto.
-- `nexus 2.0.sln`: solución de Visual Studio.
-- [`docs/`](docs/) reúne la documentación técnica disponible en el repositorio.
+SSMS sirve para administrar y preparar la base de datos; el proyecto C# se abre en Visual Studio. Las instrucciones completas están en el README de la entrega.
 
-## Estructura del diseño
-El código está concentrado en un solo archivo (`Program.cs`) pero separa responsabilidades mediante clases: `JuegoNexus` coordina la partida; `Cadete`, `Entidad`, `Robot` y `Enemigo` representan actores; `Inventario` gestiona objetos; `Zona` representa ubicaciones; y `Mision` registra objetivos.
+## Material anterior
 
-## Limitaciones detectadas para el estudio
-- No se encontraron interfaces ni consultas LINQ en el código revisado.
-- El inventario utiliza `List<Objeto>` y recorridos tradicionales.
-- Se recomienda separar las clases en archivos individuales cuando se realice una siguiente refactorización, sin cambiar el comportamiento.
-- Antes de publicar, revisa los metadatos de `Properties/AssemblyInfo.cs` y confirma que la información de autoría/empresa se pueda publicar.
-
-## Documentación
-Consulta la [documentación técnica](docs/). El diagnóstico de aprendizaje incluido es provisional porque debe reflejar respuestas y razonamientos propios del estudiante, no solamente contenido generado por una herramienta.
-## Control de versiones y colaboración
-
-El proyecto NEXUS 2.0 utiliza GitHub para almacenar y organizar su código fuente y documentación. El control de versiones permite registrar modificaciones, mantener un historial de cambios y facilitar el trabajo colaborativo.
-
-### Procedimiento de Pull Request
-
-1. Crear una rama independiente para realizar modificaciones.
-2. Editar el código o la documentación del proyecto.
-3. Registrar los cambios mediante un commit.
-4. Crear un Pull Request para proponer la integración de los cambios en la rama principal `main`.
-5. Revisar las modificaciones antes de aprobar su integración.
-
-### Objetivo
-
-Mantener un historial organizado del desarrollo de NEXUS 2.0 y permitir que los cambios sean revisados antes de incorporarse a la versión principal del proyecto.
-
-**Repositorio:** https://github.com/estatnerluisramosca-coder/NEXUS2.0
-Documentación técnica del proyecto NEXUS 2.0.
+El código de consola y los documentos que ya estaban en la raíz y en docs/ se conservan como material de la versión anterior. Para revisar o compilar la entrega final, entra en Entrega_V9/.

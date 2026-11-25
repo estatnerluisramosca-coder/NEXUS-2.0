@@ -1,0 +1,20 @@
+NEXUS — El Amanecer de los Gigantes
+Paquete del proyecto fuente V9.
+
+CONTENIDO
+- Solución de Visual Studio (.slnx).
+- Proyecto WinForms y código C#.
+- Recursos: mapas, portada, sprites e imágenes.
+- Música del juego.
+
+PARA ABRIR Y COMPILAR
+1. Extrae el ZIP en una carpeta.
+2. Antes de jugar, ejecuta BaseDatos/01_Crear_NexusMemoria.sql en SQL Server Management Studio o Azure Data Studio.
+3. Si usas otra instancia, ajusta la conexión NexusDb en “nexus el amanecer de los gigantes/App.config”. La configuración inicial usa el servidor local “localhost” con autenticación integrada.
+4. Abre “nexus el amanecer de los gigantes.slnx” con Visual Studio 2022.
+5. Si Visual Studio solicita componentes, instala el paquete de desarrollo de .NET Framework 4.7.2 y el soporte de Windows Forms.
+6. Selecciona Release y compila la solución.
+
+El menú permite crear o seleccionar perfiles, iniciar partidas, continuar partidas activas y eliminar partidas guardadas. El progreso se guarda en SQL Server durante el juego y al cerrar la aplicación. Consulta BaseDatos/README.md para el modelo y la recuperación de partidas.
+
+Los directorios bin y obj no se incluyen: Visual Studio los genera al compilar.
