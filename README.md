@@ -28,8 +28,7 @@ Esta entrega conserva el código fuente recibido y añade documentación inicial
 - `Program.cs`: contiene el punto de entrada y las clases del juego.
 - `nexus 2.0.csproj`: configuración del proyecto.
 - `nexus 2.0.sln`: solución de Visual Studio.
-- `docs/manual-tecnico.md`: manual de estudio.
-- `docs/diagramas.mmd`: diagramas en sintaxis Mermaid.
+- [`docs/`](docs/README.md) reúne la documentación técnica disponible en el repositorio.
 
 ## Estructura del diseño
 El código está concentrado en un solo archivo (`Program.cs`) pero separa responsabilidades mediante clases: `JuegoNexus` coordina la partida; `Cadete`, `Entidad`, `Robot` y `Enemigo` representan actores; `Inventario` gestiona objetos; `Zona` representa ubicaciones; y `Mision` registra objetivos.
@@ -41,7 +40,7 @@ El código está concentrado en un solo archivo (`Program.cs`) pero separa respo
 - Antes de publicar, revisa los metadatos de `Properties/AssemblyInfo.cs` y confirma que la información de autoría/empresa se pueda publicar.
 
 ## Documentación
-Consulta la carpeta `docs/`. El diagnóstico de aprendizaje incluido es provisional porque debe reflejar respuestas y razonamientos propios del estudiante, no solamente contenido generado por una herramienta.
+Consulta el [índice de documentación técnica](docs/README.md). El diagnóstico de aprendizaje incluido es provisional porque debe reflejar respuestas y razonamientos propios del estudiante, no solamente contenido generado por una herramienta.
 ## Control de versiones y colaboración
 
 El proyecto NEXUS 2.0 utiliza GitHub para almacenar y organizar su código fuente y documentación. El control de versiones permite registrar modificaciones, mantener un historial de cambios y facilitar el trabajo colaborativo.
