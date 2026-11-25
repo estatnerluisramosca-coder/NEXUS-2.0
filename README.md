@@ -1,4 +1,4 @@
-# NEXUS v1.0 — Ecos del Vacío
+# NEXUS v1.0 — AMANECER DE LOS GIGANTES 
 
 Juego de exploración, decisiones y supervivencia desarrollado en C# como aplicación de consola para .NET Framework 4.8.
 
