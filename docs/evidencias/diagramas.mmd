@@ -11,11 +11,11 @@ flowchart TD
     C --> D[Menú / estado]
     D --> E{Acción}
     E -->|Explorar| F[Validar y gastar 10 energía]
-    F --> G{Evento]
+    F --> G{Evento}
     G -->|Anomalía| H[Registrar objetivo]
-    G -->|Objeto/info| I[Actualizar inventario o XP]
+    G -->|Objeto o información| I[Actualizar inventario o XP]
     G -->|Entidad| J[Encuentro: atacar, escapar, analizar, usar]
-    G -->|Daño/energía| K[Actualizar estado]
+    G -->|Daño o pérdida de energía| K[Actualizar estado]
     E -->|Mover| L[Zona adyacente; núcleo bloqueado hasta anomalía]
     E -->|Inventario / objetivos| M[Consultar o usar]
     H --> D
