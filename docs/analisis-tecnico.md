@@ -1,67 +1,221 @@
-# Análisis técnico de la evolución de NEXUS
+# Análisis técnico de NEXUS 2.0
 
-## Método y base del análisis
+## 1. Introducción
 
-Se inspeccionó el código fuente H3 incluido en el ZIP publicado: `Program.cs`, `nexus 2.0.csproj`, `nexus 2.0.sln` y `App.config`. Las afirmaciones sobre clases y comportamiento se contrastaron con el código extraído, no solo con la documentación previa. Las decisiones técnicas se contrastaron con documentación primaria de Microsoft Learn. La búsqueda y revisión de fuentes se realizó el **25 de noviembre de 2026**; los enlaces quedan como referencia para volver a comprobarlos antes de implementar.
+NEXUS es un videojuego desarrollado en C# que contiene mecánicas de exploración, combate, inventario, administración de recursos y progreso de misiones. El código de consola analizado utiliza programación orientada a objetos para representar al cadete, las entidades, los objetos, las zonas y las misiones.
 
-## Situación de partida observada
+El objetivo de este análisis es evaluar las alternativas tecnológicas que pueden utilizarse para evolucionar el proyecto hacia una aplicación gráfica, organizada y preparada para almacenar partidas.
 
-H3 compila como consola C# para .NET Framework 4.8. Un único `Program.cs` contiene `Program`, `Personaje`, `Cadete`, `Entidad`, `Robot`, `Enemigo`, `Objeto`, `Inventario`, `Zona`, `Mision` y `JuegoNexus`. La última clase coordina el menú, las reglas, el azar, la lectura y los mensajes de consola. El estado se pierde al terminar la ejecución. El proyecto referencia `System.Data`, pero no contiene conexión SQL ni formularios.
+Las recomendaciones se basan en el código analizado y en documentación técnica oficial. Las tecnologías propuestas deberán verificarse durante su implementación.
 
-Las mecánicas existentes ofrecen un alcance realista para evolucionar: cinco zonas, exploración con energía y eventos, movimiento adyacente, inventario, encuentro por turnos y una misión final de recuperación. El diagnóstico detallado está en [arquitectura-actual.md](arquitectura-actual.md).
+## 2. Estado técnico actual
 
-## Alternativas evaluadas
+En el código analizado se identifican las siguientes características:
 
-| Decisión | Alternativas | Evaluación para este proyecto | Recomendación |
-|---|---|---|---|
-| Interfaz | Mantener consola / Windows Forms / WPF | La consola ya ejecuta las reglas, pero no satisface el objetivo gráfico. WinForms proporciona formularios, controles, gráficos básicos y diseñador visual integrado con Visual Studio; coincide con la tecnología obligatoria. WPF ofrece otra plataforma visual y un modelo distinto que elevaría el cambio sin necesidad del juego actual. | WinForms con ventana principal y paneles/UserControls; mantener el flujo por turnos y no prometer gráficos 3D. |
-| Plataforma .NET | Conservar .NET Framework 4.8 al añadir WinForms / migrar simultáneamente a .NET moderno | El `.csproj` actual ya declara v4.8. Mantenerlo evita combinar refactor de reglas, interfaz y migración de runtime. La documentación de WinForms cubre tanto .NET moderno como .NET Framework; conviene tratar una actualización como fase separada. | Primera etapa compatible con .NET Framework 4.8, salvo requisito del laboratorio que indique otra versión. |
-| Separación de capas | Eventos de botones con todas las reglas / dominio y servicios separados | Poner mecánicas y SQL en eventos mantendría el acoplamiento que ya existe en `JuegoNexus`. Separar presentación, servicios de aplicación, dominio y datos permite reutilizar y verificar reglas sin UI. | Extraer acciones puras primero; formularios solo presentan estado y envían comandos. |
-| Acceso a SQL | Serializar a JSON / ADO.NET con SQL Server / ORM | JSON facilita prototipo local pero no cumple persistencia relacional con SQL Server. ADO.NET permite consultas y transacciones explícitas y encaja con el proyecto Framework. Un ORM podría reducir mapeo pero añade dependencia y abstracción antes de estabilizar el modelo. | SQL Server con repositorios delgados y ADO.NET en primera etapa; reconsiderar ORM tras fijar esquema y necesidades. |
-| Guardado | Guardar cada evento por separado / snapshot transaccional | Varios cambios componen una sola partida; si se actualizan por separado se puede dejar estado parcial. | Guardar snapshot completo de cadete, zona, inventario y misión dentro de una transacción local. |
-| Catálogo | Usar nombres como claves / códigos estables | H3 identifica objetos por texto (p. ej. `"Nucleo energetico"`) y zonas por índice; cambiar una etiqueta rompería la identidad persistente. | Asignar `ItemCode`, `Zone.Code` y `MissionCode` estables al migrar. |
+- Lenguaje C#.
+- Aplicación de consola con interacción mediante texto.
+- Clases abstractas, herencia y polimorfismo.
+- Uso de colecciones genéricas para administrar objetos y zonas.
+- Reglas de exploración, combate y progreso de misiones.
+- Eventos aleatorios mediante la clase `Random`.
+- Validaciones de entradas y condiciones de juego.
 
-## Decisiones recomendadas y razones
+No se identifica en el código analizado una interfaz gráfica Windows Forms, una conexión implementada con SQL Server ni un sistema de guardado y recuperación de partidas.
 
-### Windows Forms
+Estas funcionalidades se consideran objetivos de evolución y no características terminadas.
 
-La meta del curso y la arquitectura prevista exigen una app de escritorio C#. La guía oficial describe WinForms como UI de escritorio Windows con controles, gráficos, enlace de datos, entrada y diseñador visual. Eso permite presentar el mapa como nodos, controles de estado, una lista de eventos y acciones del encuentro sin rehacer la mecánica por turnos. Mantener .NET Framework 4.8 inicialmente coincide con el csproj y reduce riesgos de migración simultánea.
+## 3. Alternativas tecnológicas
 
-### Dominio desacoplado
+### 3.1. Lenguaje de programación
 
-La clase `JuegoNexus` mezcla coordinación, salida de texto, entrada y reglas. Una migración directa de cada `Console.WriteLine` a una etiqueta o MessageBox reproduciría ese acoplamiento. La separación de aplicación y dominio hace que “explorar” devuelva resultado y cambios; la UI decide cómo mostrarlos. Las entidades siguen representando el cadete y los rivales. La fuente aleatoria inyectable se recomienda para permitir secuencias repetibles en verificaciones futuras.
+**Alternativa A: C#**
 
-### ADO.NET y SQL Server
+Ventajas:
+- Permite reutilizar las clases y la lógica existentes.
+- Ofrece herramientas de programación orientada a objetos.
+- Se integra con Windows Forms y con tecnologías de acceso a SQL Server.
+- Cuenta con herramientas de desarrollo y depuración en Visual Studio.
 
-El proyecto actual ya tiene referencia a `System.Data`; ADO.NET tiene menos piezas nuevas que introducir para un guardado local pequeño en Framework 4.8. Los repositorios encapsulan conexión y consultas; el modelo propuesto guarda snapshot consistente y usa claves foráneas. Para valores dinámicos deben emplearse parámetros nombrados y tipos explícitos. La guía de Microsoft advierte que los parámetros representan valores y no identificadores SQL, por lo que los nombres dinámicos deberán salir de una lista permitida o no ser dinámicos.
+Desventajas:
+- La aplicación gráfica requiere reorganizar parte del código actual.
+- La conexión con una base de datos requiere configuración y gestión de errores.
 
-Las escrituras del guardado deben ejecutarse en una transacción local: si falla una parte del snapshot, revertir todas para evitar que el jugador cargue una expedición parcialmente guardada. La selección de SQL Server (por ejemplo, instancia local disponible en laboratorio) y la cadena de conexión quedan pendientes de la instalación real.
+**Alternativa B: Java**
 
-## Riesgos y mitigaciones
+Ventajas:
+- Ofrece programación orientada a objetos.
+- Permite desarrollar aplicaciones gráficas y conectarse con bases de datos.
+- Cuenta con herramientas de desarrollo y depuración.
 
-- **Regla “sobrevivido”:** el código cuenta escape como encuentro sobrevivido. Acordar el significado narrativo y codificarlo como regla única antes de diseñar pruebas.
-- **Mezcla de cambios:** migrar simultáneamente plataforma, UI y datos dificulta localizar errores. Mantener etapas pequeñas y conservar una versión de consola que permita comparar reglas.
-- **Estado parcial:** guardar objetos, misión y personaje en operaciones separadas puede producir inconsistencias. Usar transacción y validar relaciones.
-- **Dependencia de instancia:** la aplicación no funcionará si SQL Server está detenido o mal configurado. Mostrar mensaje accionable y permitir reintentar; definir durante instalación cómo se inicializa el esquema.
-- **Conexiones y credenciales:** no versionar contraseñas ni dejar recursos abiertos. Configurar el proveedor de conexión en el entorno y disponer siempre de `using`/liberación de recursos.
-- **Alcance visual:** WinForms no aporta automáticamente arte de juego. Priorizar claridad del mapa, estado y opciones antes de ilustración y efectos.
+Desventajas:
+- Sería necesario trasladar las clases y adaptar la lógica del proyecto.
+- La migración implicaría mantener dos implementaciones durante la transición.
 
-## Fuentes técnicas primarias
+**Alternativa C: Python**
 
-1. Microsoft Learn, [Windows Forms overview](https://learn.microsoft.com/en-us/dotnet/desktop/winforms/overview/?view=netdesktop-9.0): propósito de WinForms y capacidades de controles, gráficos, enlace y diseñador. Consultada el 25-11-2026.
-2. Microsoft Learn, [Windows Forms documentation](https://learn.microsoft.com/en-us/dotnet/desktop/winforms/): guías de controles, layout, entrada de teclado y ratón. Consultada el 25-11-2026.
-3. Microsoft Learn, [Configure parameters — ADO.NET Provider for SQL Server](https://learn.microsoft.com/en-us/sql/connect/ado-net/configure-parameters?view=sql-server-ver17): parámetros nombrados, tipos y límites de sustitución de valores. Consultada el 25-11-2026.
-4. Microsoft Learn, [Local transactions — ADO.NET Provider for SQL Server](https://learn.microsoft.com/en-us/sql/connect/ado-net/local-transactions?view=sql-server-ver17): agrupar escrituras y revertirlas si falla una parte. Consultada el 25-11-2026.
-5. Microsoft Learn, [Configuring parameters and parameter data types — .NET Framework 4.8](https://learn.microsoft.com/en-us/dotnet/framework/data/adonet/configuring-parameters-and-parameter-data-types?view=netframework-4.8): parámetros en ADO.NET clásico para el runtime de H3. Consultada el 25-11-2026.
+Ventajas:
+- Permite crear prototipos rápidamente.
+- Cuenta con bibliotecas para interfaces gráficas y acceso a datos.
 
-## Verificación de información obtenida con IA
+Desventajas:
+- Requeriría reescribir la implementación actual.
+- No ofrece la misma continuidad directa con las clases C# existentes.
 
-La IA se utilizó como apoyo para estructurar alternativas y proponer nombres/capas; no se aceptó su descripción del proyecto sin contraste. La verificación realizada para esta documentación fue:
+**Decisión recomendada:** mantener C#, ya que permite aprovechar el trabajo existente y reducir el esfuerzo de migración.
 
-- Abrir y extraer el ZIP versionado en el repositorio; inspeccionar directamente declaraciones de clases y métodos de `Program.cs`.
-- Confirmar en `nexus 2.0.csproj` el runtime v4.8, tipo ejecutable y archivos compilados; no afirmar que ya es WinForms por referenciar `System.Data`.
-- Seguir el código de movimiento, exploración, combate, inventario y `Mision.PuedeCompletar()`; documentar expresamente la condición real de escape.
-- Contrastar decisiones sobre WinForms, parámetros y transacciones con las páginas oficiales enlazadas de Microsoft Learn.
-- Marcar todas las capas, tablas y pantallas no presentes en H3 como propuestas, no como funcionalidades implementadas.
+## 4. Selección de la interfaz gráfica
 
-La documentación no declara pruebas de compilación, de UI o de conexión SQL: no se ejecutó la aplicación en este análisis ni hay instancia de base de datos confirmada. Esas verificaciones corresponden a la implementación.
+### 4.1. Windows Forms
+
+Windows Forms es una tecnología de interfaz gráfica para aplicaciones de escritorio en Windows. Permite utilizar formularios, botones, etiquetas, paneles y otros controles visuales, además de responder a eventos como los clics del usuario. La documentación oficial de Microsoft explica estas capacidades y el uso del diseñador visual de Visual Studio.
+
+Ventajas:
+- Integración con C# y Visual Studio.
+- Creación visual de formularios.
+- Manejo de eventos y controles.
+- Adecuado para desarrollar una aplicación de escritorio con pantallas de inventario, misiones y estado del personaje.
+
+Desventajas:
+- Está orientado a Windows.
+- El diseño y la lógica deben organizarse correctamente para evitar formularios con demasiadas responsabilidades.
+
+### 4.2. Aplicación de consola
+
+Ventajas:
+- Es la interfaz utilizada por el código analizado.
+- Permite ejecutar y probar las mecánicas sin construir formularios.
+- Tiene una estructura sencilla para el prototipo inicial.
+
+Desventajas:
+- La interacción visual es limitada.
+- No ofrece por sí sola la experiencia gráfica prevista para la siguiente etapa.
+
+**Decisión recomendada:** utilizar Windows Forms para la evolución gráfica y conservar la lógica del juego en clases separadas de los formularios.
+
+Referencia técnica: [Microsoft Learn — Windows Forms overview](https://learn.microsoft.com/en-us/dotnet/desktop/winforms/overview/).
+
+## 5. Selección de la base de datos
+
+### 5.1. SQL Server
+
+SQL Server es la opción propuesta para almacenar las partidas, los personajes, los inventarios y el progreso de las misiones.
+
+Ventajas:
+- Permite organizar los datos mediante tablas y relaciones.
+- Admite claves primarias y foráneas.
+- Permite realizar operaciones transaccionales.
+- Puede utilizarse desde C# mediante ADO.NET.
+
+Desventajas:
+- Requiere instalar o configurar una instancia de base de datos.
+- Es necesario diseñar las tablas, relaciones y consultas.
+- La aplicación debe gestionar errores de conexión, permisos y persistencia.
+
+### 5.2. Archivos locales
+
+Otra alternativa sería almacenar el progreso en archivos locales.
+
+Ventajas:
+- Puede resultar más sencilla para una primera prueba.
+- No requiere necesariamente un servidor de base de datos.
+
+Desventajas:
+- La gestión de relaciones entre partidas, inventarios y misiones requiere lógica adicional.
+- Las actualizaciones de varios datos relacionados deben controlarse cuidadosamente.
+
+**Decisión recomendada:** utilizar SQL Server como objetivo de persistencia porque el diseño previsto requiere relaciones entre distintas entidades y operaciones de guardado y recuperación.
+
+Referencia técnica: [Microsoft Learn — Transacciones y concurrencia en ADO.NET](https://learn.microsoft.com/en-us/sql/connect/ado-net/transactions-and-concurrency?view=sql-server-ver17).
+
+## 6. Programación orientada a objetos
+
+El código analizado ya utiliza principios de programación orientada a objetos:
+
+- **Abstracción:** `Personaje` y `Entidad` representan estructuras comunes.
+- **Encapsulamiento:** algunas propiedades, como la energía y los escudos del cadete, limitan la modificación directa mediante sus accesores.
+- **Herencia:** `Cadete` y `Entidad` heredan de `Personaje`; `Robot` y `Enemigo` heredan de `Entidad`.
+- **Polimorfismo:** los métodos virtuales y sobrescritos permiten comportamientos específicos en las clases derivadas.
+
+Se recomienda conservar estos principios durante la evolución del proyecto. También conviene incorporar interfaces cuando existan contratos compartidos entre componentes que no necesiten pertenecer a la misma jerarquía de herencia.
+
+Referencia técnica: [Microsoft Learn — Programación orientada a objetos en C#](https://learn.microsoft.com/en-us/dotnet/csharp/fundamentals/tutorials/oop).
+
+## 7. Separación de responsabilidades
+
+Se recomienda organizar la solución en tres áreas:
+
+1. **Presentación:** formularios Windows Forms y controles visuales.
+2. **Lógica del juego:** reglas de exploración, combate, inventario, recursos y misiones.
+3. **Acceso a datos:** conexión, consultas y operaciones de guardado y recuperación en SQL Server.
+
+Esta organización permitirá modificar la interfaz sin tener que reescribir las reglas del juego y cambiar la persistencia sin introducir consultas SQL dentro de los formularios.
+
+## 8. Seguridad y calidad
+
+La futura implementación deberá considerar las siguientes medidas:
+
+- Validar las entradas del usuario.
+- Utilizar consultas SQL parametrizadas.
+- Evitar publicar credenciales y cadenas de conexión con contraseñas en GitHub.
+- Controlar las excepciones de las operaciones de base de datos.
+- Utilizar transacciones para guardar conjuntos de datos relacionados.
+- Probar las reglas de combate, inventario y progreso de las misiones.
+- Verificar el guardado y la recuperación de una partida completa.
+- Mantener mensajes de error comprensibles para el usuario.
+
+Las pruebas deberán comprobar tanto los casos normales como las situaciones límite, por ejemplo, energía insuficiente, inventario vacío, selección inválida y fallos de conexión.
+
+## 9. Plan de implementación recomendado
+
+### Fase 1. Revisión y organización
+
+- Confirmar los archivos y la solución de Visual Studio.
+- Revisar las clases actuales y sus dependencias.
+- Identificar las reglas que deben conservarse.
+
+### Fase 2. Separación de la lógica
+
+- Reducir la dependencia de las instrucciones de consola.
+- Mantener las reglas del juego en clases independientes.
+- Comprobar que la lógica siga funcionando.
+
+### Fase 3. Interfaz gráfica
+
+- Crear el formulario principal.
+- Incorporar las pantallas de exploración, inventario, misiones y estado.
+- Conectar los controles con la lógica del juego.
+
+### Fase 4. Persistencia
+
+- Crear la base de datos y sus tablas.
+- Implementar el acceso a datos.
+- Incorporar el guardado y la recuperación de partidas.
+- Verificar la integridad de los datos.
+
+### Fase 5. Pruebas y documentación
+
+- Probar las mecánicas principales.
+- Corregir errores.
+- Actualizar el manual técnico y el README.
+- Registrar los cambios mediante commits descriptivos en Git.
+
+## 10. Verificación de la información técnica
+
+Las recomendaciones se contrastaron con documentación oficial de Microsoft Learn sobre Windows Forms, programación orientada a objetos en C# y transacciones en ADO.NET.
+
+Las fuentes permiten respaldar las capacidades generales de las tecnologías seleccionadas. No demuestran por sí mismas que NEXUS ya esté migrado, conectado a SQL Server o probado. Esas condiciones deben comprobarse sobre el código y el entorno real del proyecto.
+
+## 11. Conclusión
+
+Se recomienda continuar NEXUS con C#, Windows Forms y SQL Server. Esta combinación aprovecha el código existente, permite construir una interfaz gráfica para Windows y proporciona una opción relacional para la futura persistencia de las partidas.
+
+La evolución debe realizarse progresivamente, separando la presentación, la lógica del videojuego y el acceso a los datos. El éxito de la propuesta dependerá de implementar y probar cada componente, manteniendo documentada la diferencia entre las funcionalidades existentes y las que todavía están planificadas.
+
+## 12. Fuentes técnicas
+
+1. Microsoft Learn. *Windows Forms overview*. https://learn.microsoft.com/en-us/dotnet/desktop/winforms/overview/
+2. Microsoft Learn. *Object-oriented programming — C#*. https://learn.microsoft.com/en-us/dotnet/csharp/fundamentals/tutorials/oop
+3. Microsoft Learn. *Transactions and concurrency — ADO.NET Provider for SQL Server*. https://learn.microsoft.com/en-us/sql/connect/ado-net/transactions-and-concurrency?view=sql-server-ver17
+
+Fecha de consulta: 26 de octubre de 2026.
+
